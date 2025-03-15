@@ -1,0 +1,13 @@
+{
+  "name": "memeindex-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for MemeIndex Mini App",
+  "main": "telegram_bot.js",
+  "scripts": {
+    "start": "node telegram_bot.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}
