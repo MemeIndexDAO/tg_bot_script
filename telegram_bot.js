@@ -1,10 +1,25 @@
 const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
 require('dotenv').config();
 
+const app = express();
 const token = process.env.BOT_TOKEN;
 const webAppUrl = process.env.MINI_APP_URL;
 const backendUrl = process.env.BACKEND_URL;
+
 const botUsername = process.env.BOT_USERNAME;
+
+// Add express middleware
+app.use(express.json());
+
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.send('Bot is running!');
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy', timestamp: new Date() });
+});
 
 const bot = new TelegramBot(token, { 
     polling: true,
@@ -103,4 +118,8 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-console.log('Bot is running... Press Ctrl+C to stop'); 
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Bot server is running on port ${PORT}`);
+}); 
