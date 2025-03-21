@@ -149,6 +149,7 @@ app.post('/send-template', async (req, res) => {
 
         const options = {
             parse_mode: 'HTML',
+            protect_content: false, // Allow forwarding
             reply_markup: {
                 inline_keyboard: [
                     [{
@@ -168,13 +169,17 @@ app.post('/send-template', async (req, res) => {
             `• Early voting privileges`;
 
         try {
+            // First send the message to the user
             const sentMessage = await bot.sendMessage(chatId, messageText, options);
+            
             res.json({ 
                 success: true, 
                 messageId: sentMessage.message_id,
-                chatId: sentMessage.chat.id 
+                chatId: sentMessage.chat.id,
+                canBeForwarded: true
             });
         } catch (botError) {
+            console.error('Bot error:', botError);
             res.status(500).json({ 
                 success: false, 
                 error: 'Failed to send message',
@@ -187,6 +192,7 @@ app.post('/send-template', async (req, res) => {
             });
         }
     } catch (error) {
+        console.error('Server error:', error);
         res.status(500).json({ 
             success: false, 
             error: 'Server error',
