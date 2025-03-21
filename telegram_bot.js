@@ -123,6 +123,30 @@ app.post('/send-template', async (req, res) => {
     try {
         const { chatId, referralCode } = req.body;
         
+        if (!chatId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Missing chatId',
+                received: { chatId, referralCode }
+            });
+        }
+
+        if (!referralCode) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Missing referralCode',
+                received: { chatId, referralCode }
+            });
+        }
+
+        if (!botUsername) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Bot username not configured',
+                botUsername
+            });
+        }
+
         const options = {
             parse_mode: 'HTML',
             reply_markup: {
@@ -136,21 +160,41 @@ app.post('/send-template', async (req, res) => {
         };
 
         const messageText = 
+            `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
             `Let's open it together!\n\n` +
             `💰 Join now and receive:\n` +
             `• 2 FREE votes for joining\n` +
             `• Access to exclusive meme token listings\n` +
             `• Early voting privileges`;
 
-        const sentMessage = await bot.sendMessage(chatId, messageText, options);
-        res.json({ 
-            success: true, 
-            messageId: sentMessage.message_id,
-            chatId: sentMessage.chat.id 
-        });
+        try {
+            const sentMessage = await bot.sendMessage(chatId, messageText, options);
+            res.json({ 
+                success: true, 
+                messageId: sentMessage.message_id,
+                chatId: sentMessage.chat.id 
+            });
+        } catch (botError) {
+            res.status(500).json({ 
+                success: false, 
+                error: 'Failed to send message',
+                details: {
+                    message: botError.message,
+                    code: botError.code,
+                    description: botError.description
+                },
+                params: { chatId, botUsername }
+            });
+        }
     } catch (error) {
-        console.error('Error sending template message:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Server error',
+            details: {
+                message: error.message,
+                type: error.constructor.name
+            }
+        });
     }
 });
 
