@@ -118,6 +118,42 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+// Add this after the other app.use statements
+app.post('/send-template', async (req, res) => {
+    try {
+        const { chatId, referralCode } = req.body;
+        
+        const options = {
+            parse_mode: 'HTML',
+            reply_markup: {
+                inline_keyboard: [
+                    [{
+                        text: '🎁 Join MemeIndex',
+                        url: `https://t.me/${botUsername}?start=${referralCode}`
+                    }]
+                ]
+            }
+        };
+
+        const messageText = 
+            `Let's open it together!\n\n` +
+            `💰 Join now and receive:\n` +
+            `• 2 FREE votes for joining\n` +
+            `• Access to exclusive meme token listings\n` +
+            `• Early voting privileges`;
+
+        const sentMessage = await bot.sendMessage(chatId, messageText, options);
+        res.json({ 
+            success: true, 
+            messageId: sentMessage.message_id,
+            chatId: sentMessage.chat.id 
+        });
+    } catch (error) {
+        console.error('Error sending template message:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
