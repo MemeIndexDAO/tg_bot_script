@@ -9,6 +9,17 @@ const backendUrl = process.env.BACKEND_URL;
 
 const botUsername = process.env.BOT_USERNAME;
 
+// Add CORS middleware
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 // Add express middleware
 app.use(express.json());
 
