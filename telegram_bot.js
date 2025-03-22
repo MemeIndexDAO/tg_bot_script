@@ -193,7 +193,7 @@ try {
                 inline_keyboard: [
                     [{
                         text: '🎁 Join MemeIndex',
-                        url: `${webAppUrl}/MemeBattleArena?ref=${referralCode}`
+                        url: `${webAppUrl}?ref=${referralCode}`
                     }]
                 ]
             };
