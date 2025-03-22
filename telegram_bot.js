@@ -162,6 +162,25 @@ try {
                 return;
             }
 
+            // Extract the referral code from the query
+            // The query format is: "botUsername referralCode"
+            const queryParts = query.query.split(' ');
+            const referralCode = queryParts[queryParts.length - 1];
+
+            if (!referralCode) {
+                console.error('No referral code found in query');
+                await bot.answerInlineQuery(query.id, [{
+                    type: 'article',
+                    id: '1',
+                    title: 'Error',
+                    description: 'Invalid referral code format',
+                    input_message_content: {
+                        message_text: 'Sorry, the referral code format is invalid.'
+                    }
+                }]);
+                return;
+            }
+
             // Create the share message
             const messageText = 
                 `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
@@ -176,7 +195,7 @@ try {
                 inline_keyboard: [
                     [{
                         text: '🎁 Join MemeIndex',
-                        url: `https://t.me/${botUsername}?start=${query.query}`
+                        url: `https://t.me/${botUsername}?start=${referralCode}`
                     }]
                 ]
             };
@@ -197,7 +216,7 @@ try {
                 is_personal: false
             });
 
-            console.log('Successfully answered inline query');
+            console.log('Successfully answered inline query for referral code:', referralCode);
         } catch (error) {
             console.error('Error handling inline query:', error);
             try {
