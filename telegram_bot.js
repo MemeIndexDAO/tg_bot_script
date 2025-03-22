@@ -254,6 +254,22 @@ app.post('/send-template', async (req, res) => {
 // Handle inline queries
 bot.on('inline_query', async (query) => {
     try {
+        console.log('Received inline query:', query);
+        
+        if (!query.query) {
+            console.error('No query text received');
+            await bot.answerInlineQuery(query.id, [{
+                type: 'article',
+                id: '1',
+                title: 'Error',
+                description: 'No referral code provided',
+                input_message_content: {
+                    message_text: 'Sorry, no referral code was provided.'
+                }
+            }]);
+            return;
+        }
+
         const messageText = 
             `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
             `Let's open it together!\n\n` +
