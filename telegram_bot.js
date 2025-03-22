@@ -215,6 +215,54 @@ app.post('/send-template', async (req, res) => {
     }
 });
 
+// Handle inline queries
+bot.on('inline_query', async (query) => {
+    try {
+        const messageText = 
+            `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
+            `Let's open it together!\n\n` +
+            `💰 Join now and receive:\n` +
+            `• 2 FREE votes for joining\n` +
+            `• Access to exclusive meme token listings\n` +
+            `• Early voting privileges`;
+
+        const options = {
+            parse_mode: 'HTML',
+            reply_markup: {
+                inline_keyboard: [
+                    [{
+                        text: '🎁 Join MemeIndex',
+                        url: `https://t.me/${botUsername}?start=${query.query}`
+                    }]
+                ]
+            }
+        };
+
+        await bot.answerInlineQuery(query.id, [{
+            type: 'article',
+            id: '1',
+            title: 'Share MemeIndex Invitation',
+            description: 'Share this invitation with your friends to earn rewards!',
+            input_message_content: {
+                message_text: messageText,
+                parse_mode: 'HTML'
+            },
+            reply_markup: options.reply_markup
+        }]);
+    } catch (error) {
+        console.error('Error handling inline query:', error);
+        await bot.answerInlineQuery(query.id, [{
+            type: 'article',
+            id: '1',
+            title: 'Error',
+            description: 'Failed to generate invitation message',
+            input_message_content: {
+                message_text: 'Sorry, there was an error generating the invitation message.'
+            }
+        }]);
+    }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
