@@ -163,9 +163,7 @@ try {
             }
 
             // Extract the referral code from the query
-            // The query format is: "botUsername referralCode"
-            const queryParts = query.query.split(' ');
-            const referralCode = queryParts[queryParts.length - 1];
+            const referralCode = query.query.trim();
 
             if (!referralCode) {
                 console.error('No referral code found in query');
@@ -195,7 +193,7 @@ try {
                 inline_keyboard: [
                     [{
                         text: '🎁 Join MemeIndex',
-                        url: `https://t.me/${botUsername}?start=${referralCode}`
+                        url: `${webAppUrl}/MemeBattleArena?ref=${referralCode}`
                     }]
                 ]
             };
