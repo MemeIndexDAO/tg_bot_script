@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 require('dotenv').config();
+const axios = require('axios');
 
 const app = express();
 const token = process.env.BOT_TOKEN;
@@ -42,6 +43,20 @@ const bot = new TelegramBot(token, {
 
 async function sendWelcomeMessage(chatId, firstName, referralCode = null) {
     try {
+        // If there's a referral code, verify it with the backend
+        if (referralCode) {
+            try {
+                const response = await axios.get(`${backendUrl}/api/referral/stats/${referralCode}`);
+                if (!response.data || !response.data.referralCode) {
+                    // Invalid referral code, send normal welcome message
+                    referralCode = null;
+                }
+            } catch (error) {
+                console.error('Error verifying referral code:', error);
+                referralCode = null;
+            }
+        }
+
         const appUrl = referralCode 
             ? `${webAppUrl}?ref=${referralCode}`
             : webAppUrl;
@@ -76,8 +91,29 @@ async function sendWelcomeMessage(chatId, firstName, referralCode = null) {
 }
 
 bot.onText(/\/start(?:\s+(\w+))?/, async (msg, match) => {
-    const referralCode = match[1];
-    await sendWelcomeMessage(msg.chat.id, msg.from.first_name, referralCode);
+    try {
+        const referralCode = match[1];
+        console.log('Received start command with referral code:', referralCode);
+        await sendWelcomeMessage(msg.chat.id, msg.from.first_name, referralCode);
+    } catch (error) {
+        console.error('Error in start command handler:', error);
+        // Send a basic welcome message if there's an error
+        await bot.sendMessage(
+            msg.chat.id,
+            `Welcome ${msg.from.first_name}! 👋\n\nI'm your gateway to the MemeIndex Mini App. Click the button below to start exploring! 🌟`,
+            {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: [
+                        [{
+                            text: '🚀 Launch App',
+                            url: webAppUrl
+                        }]
+                    ]
+                }
+            }
+        );
+    }
 });
 
 bot.on('new_chat_members', async (msg) => {
