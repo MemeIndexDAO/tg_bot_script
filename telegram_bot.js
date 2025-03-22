@@ -100,6 +100,8 @@ try {
     bot.onText(/\/start(?:\s+(\w+))?/, async (msg, match) => {
         try {
             const referralCode = match[1];
+            console.log('Received start command with referral code:', referralCode);
+            
             const appUrl = referralCode 
                 ? `${webAppUrl}?ref=${referralCode}`
                 : webAppUrl;
@@ -160,6 +162,7 @@ try {
                 return;
             }
 
+            // Create the share message
             const messageText = 
                 `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
                 `Let's open it together!\n\n` +
@@ -168,18 +171,17 @@ try {
                 `• Access to exclusive meme token listings\n` +
                 `• Early voting privileges`;
 
-            const options = {
-                parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: [
-                        [{
-                            text: '🎁 Join MemeIndex',
-                            url: `https://t.me/${botUsername}?start=${query.query}`
-                        }]
-                    ]
-                }
+            // Create the inline keyboard with the referral link
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [{
+                        text: '🎁 Join MemeIndex',
+                        url: `https://t.me/${botUsername}?start=${query.query}`
+                    }]
+                ]
             };
 
+            // Answer the inline query
             await bot.answerInlineQuery(query.id, [{
                 type: 'article',
                 id: '1',
@@ -189,19 +191,28 @@ try {
                     message_text: messageText,
                     parse_mode: 'HTML'
                 },
-                reply_markup: options.reply_markup
-            }]);
+                reply_markup: inlineKeyboard
+            }], {
+                cache_time: 0,
+                is_personal: false
+            });
+
+            console.log('Successfully answered inline query');
         } catch (error) {
             console.error('Error handling inline query:', error);
-            await bot.answerInlineQuery(query.id, [{
-                type: 'article',
-                id: '1',
-                title: 'Error',
-                description: 'Failed to generate invitation message',
-                input_message_content: {
-                    message_text: 'Sorry, there was an error generating the invitation message.'
-                }
-            }]);
+            try {
+                await bot.answerInlineQuery(query.id, [{
+                    type: 'article',
+                    id: '1',
+                    title: 'Error',
+                    description: 'Failed to generate invitation message',
+                    input_message_content: {
+                        message_text: 'Sorry, there was an error generating the invitation message.'
+                    }
+                }]);
+            } catch (answerError) {
+                console.error('Error answering inline query with error message:', answerError);
+            }
         }
     });
 
