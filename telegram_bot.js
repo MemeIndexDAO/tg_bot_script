@@ -102,8 +102,9 @@ try {
             const referralCode = match[1];
             console.log('Received start command with referral code:', referralCode);
             
+            // Create the web app URL with the referral code
             const appUrl = referralCode 
-                ? `${webAppUrl}?ref=${referralCode}`
+                ? `${webAppUrl}/MemeBattleArena?startapp=${referralCode}`
                 : webAppUrl;
 
             const options = {
@@ -112,7 +113,9 @@ try {
                     inline_keyboard: [
                         [{
                             text: '🚀 Launch App',
-                            url: appUrl
+                            web_app: {
+                                url: appUrl
+                            }
                         }]
                     ]
                 }
@@ -134,7 +137,9 @@ try {
                         inline_keyboard: [
                             [{
                                 text: '🚀 Launch App',
-                                url: webAppUrl
+                                web_app: {
+                                    url: webAppUrl
+                                }
                             }]
                         ]
                     }
@@ -193,7 +198,9 @@ try {
                 inline_keyboard: [
                     [{
                         text: '🎁 Join MemeIndex',
-                        url: `${webAppUrl}?ref=${referralCode}`
+                        web_app: {
+                            url: `${webAppUrl}/MemeBattleArena?startapp=${referralCode}`
+                        }
                     }]
                 ]
             };
