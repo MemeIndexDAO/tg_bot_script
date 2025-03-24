@@ -100,10 +100,9 @@ try {
     bot.onText(/\/start(?:\s+(\w+))?/, async (msg, match) => {
         try {
             const referralCode = match[1];
-            console.log('Received start command with referral code:', referralCode);
             
             const appUrl = referralCode 
-                ? `${webAppUrl}?ref=${referralCode}`
+                ? `https://t.me/MemeBattleArenaBot/app?startapp=${referralCode}`
                 : webAppUrl;
 
             const options = {
@@ -124,7 +123,6 @@ try {
 
             await bot.sendMessage(msg.chat.id, welcomeMessage, options);
         } catch (error) {
-            console.error('Error in start command handler:', error);
             await bot.sendMessage(
                 msg.chat.id,
                 `Welcome ${msg.from.first_name}! 👋\n\nI'm your gateway to the MemeIndex Mini App. Click the button below to start exploring! 🌟`,
@@ -146,10 +144,7 @@ try {
     // Handle inline queries
     bot.on('inline_query', async (query) => {
         try {
-            console.log('Received inline query:', query);
-            
             if (!query.query) {
-                console.error('No query text received');
                 await bot.answerInlineQuery(query.id, [{
                     type: 'article',
                     id: '1',
@@ -166,7 +161,6 @@ try {
             const referralCode = query.query.trim();
 
             if (!referralCode) {
-                console.error('No referral code found in query');
                 await bot.answerInlineQuery(query.id, [{
                     type: 'article',
                     id: '1',
@@ -193,7 +187,7 @@ try {
                 inline_keyboard: [
                     [{
                         text: '🎁 Join MemeIndex',
-                        url: `${webAppUrl}?ref=${referralCode}`
+                        url: `https://t.me/MemeBattleArenaBot/app?startapp=${referralCode}`
                     }]
                 ]
             };
@@ -213,23 +207,16 @@ try {
                 cache_time: 0,
                 is_personal: false
             });
-
-            console.log('Successfully answered inline query for referral code:', referralCode);
         } catch (error) {
-            console.error('Error handling inline query:', error);
-            try {
-                await bot.answerInlineQuery(query.id, [{
-                    type: 'article',
-                    id: '1',
-                    title: 'Error',
-                    description: 'Failed to generate invitation message',
-                    input_message_content: {
-                        message_text: 'Sorry, there was an error generating the invitation message.'
-                    }
-                }]);
-            } catch (answerError) {
-                console.error('Error answering inline query with error message:', answerError);
-            }
+            await bot.answerInlineQuery(query.id, [{
+                type: 'article',
+                id: '1',
+                title: 'Error',
+                description: 'Failed to generate invitation message',
+                input_message_content: {
+                    message_text: 'Sorry, there was an error generating the invitation message.'
+                }
+            }]);
         }
     });
 
