@@ -175,29 +175,28 @@ try {
 
             // Create the share message
             const messageText = 
-                `🌟 <b>Hidden door to the MemeIndex Treasury found...</b>\n\n` +
-                `Let's open it together!\n\n` +
-                `💰 Join now and receive:\n` +
-                `• 2 FREE votes for joining\n` +
-                `• Access to exclusive meme token listings\n` +
-                `• Early voting privileges`;
+                `Hidden door to the MemeIndex Treasury found... Let's open it together!`;
 
             // Create the inline keyboard with the referral link
-            const inlineKeyboard = {
+            const inlineKeyboard = {    
                 inline_keyboard: [
                     [{
-                        text: '🎁 Join MemeIndex',
+                        text: 'Unlock the Treasury',
                         url: `https://t.me/MemeBattleArenaBot/app?startapp=${referralCode}`
                     }]
                 ]
             };
+
+            // Image URL for treasury door - optional
+            const imageUrl = "https://i.ibb.co/qjzDmnG/treasury-door.jpg";
 
             // Answer the inline query
             await bot.answerInlineQuery(query.id, [{
                 type: 'article',
                 id: '1',
                 title: 'Share MemeIndex Invitation',
-                description: 'Share this invitation with your friends to earn rewards!',
+                description: 'Share this invitation with your friends',
+                thumb_url: imageUrl,
                 input_message_content: {
                     message_text: messageText,
                     parse_mode: 'HTML'
